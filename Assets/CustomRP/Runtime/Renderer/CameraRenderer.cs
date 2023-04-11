@@ -23,6 +23,8 @@ public partial class CameraRenderer {
 
 	CullingResults cullingResults;
 
+	private Lighting lighting = new Lighting();
+	
 	public void Render (ScriptableRenderContext context, Camera camera, bool useDynamicBatching = true, bool useGPUInstancing = false) {
 		this.context = context;
 		this.camera = camera;
@@ -34,6 +36,7 @@ public partial class CameraRenderer {
 		}
 
 		Setup();
+		lighting.Setup(context, cullingResults);
 		DrawVisibleGeometry(useDynamicBatching, useGPUInstancing);
 		DrawUnsupportedShaders();
 		DrawGizmos();
@@ -87,6 +90,9 @@ public partial class CameraRenderer {
 		for (int i = 0; i < extraShaderTagIds.Length; i++) {
 			drawingSettings.SetShaderPassName(i+1, extraShaderTagIds[i]);
 		}
+		
+		//lit
+		drawingSettings.SetShaderPassName(extraShaderTagIds.Length+1, litShaderTagId);
 		
 		var filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
 

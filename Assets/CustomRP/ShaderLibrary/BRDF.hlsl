@@ -26,10 +26,18 @@ struct BRDF
     float fresnel;
 };
 
+BRDF GetBRDF_simple (Surface surface) {
+    BRDF brdf;
+    brdf.diffuse = surface.color;
+    brdf.specular = 0.0;
+    brdf.roughness = 1.0;
+    return brdf;
+}
+
 BRDF GetBRDF(Surface surface,bool applyAlphaToDiffuse = false)
 {
     BRDF brdf;
-
+    
     //Reflectivity表示Specular反射率，oneMinusReflectivity表示Diffuse反射率
     float oneMinusReflectivity = OneMinusReflectivity(surface.metallic);
     //diffuse等于物体表面不吸收的光能量color*（1-高光反射率）
@@ -49,11 +57,12 @@ BRDF GetBRDF(Surface surface,bool applyAlphaToDiffuse = false)
     brdf.roughness = PerceptualRoughnessToRoughness(brdf.perceptualRoughness);
     //使用Schlick近似：fresnel=高光反射率 + 光滑度
     brdf.fresnel = saturate(surface.smoothness + 1.0 - oneMinusReflectivity);
+    
     return brdf;
 }
 
 //计算高光强度Specular Strength
-float SpecularStrength(Surface surface,BRDF brdf,Light light)
+float SpecularStrength(Surface surface,BRDF brdf, Light light)
 {
     //SafeNormalize防止观察方向与物体表面法线完全反向时，其相加结果为0向量导致归一化时除以0
     float3 h = SafeNormalize(light.direction + surface.viewDirection);

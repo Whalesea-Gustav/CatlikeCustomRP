@@ -1,12 +1,16 @@
 Shader "CatSRP/litPro"
 {
-        Properties
+    
+    Properties
     {
         //[可选：特性]变量名(Inspector上的文本,类型名) = 默认值
         //[optional: attribute] name("display text in Inspector", type name) = default value
         _BaseMap("Texture", 2D) = "white" {}
         
         _BaseColor("Color",Color) = (0.5,0.5,0.5,1.0)
+        
+        _Metallic ("Metallic", Range(0, 1)) = 0
+		_Smoothness ("Smoothness", Range(0, 1)) = 0.5
         
         _Cutoff ("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
         
@@ -16,6 +20,7 @@ Shader "CatSRP/litPro"
         [Enum(Off,0,On,1)] _ZWrite("Z Write",Float) = 1
         
         [Toggle(_CLIPPING)] _Clipping("Alpha Clipping",Float) = 0
+        [Toggle(_PREMULTIPLY_ALPHA)] _PremulAlpha ("Premultiply Alpha", Float) = 0
     }
 
     SubShader
@@ -30,7 +35,9 @@ Shader "CatSRP/litPro"
             ZWrite [_ZWrite]
             
             HLSLPROGRAM
+            #pragma target 3.5
             #pragma shader_feature _CLIPPING
+            #pragma shader_feature _PREMULTIPLY_ALPHA
             #pragma multi_compile_instancing
             #pragma vertex LitPassVertex
 			#pragma fragment LitPassFragment
@@ -38,4 +45,6 @@ Shader "CatSRP/litPro"
             ENDHLSL
         }
     }
+    
+    CustomEditor "CustomShaderGUI"
 }

@@ -14,6 +14,8 @@ public class CustomRenderPipeline : RenderPipeline
         this.useGPUInstancing = useGPUInstancing;
         //配置SRP Batch
         GraphicsSettings.useScriptableRenderPipelineBatching = useSRPBatcher;
+        
+        GraphicsSettings.lightsUseLinearIntensity = true;
     }
     
     protected override void Render (
