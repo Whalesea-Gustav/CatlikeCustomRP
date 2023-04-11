@@ -40,7 +40,7 @@ struct Varyings
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
-Varyings UnlitPassVertex(Attributes input)
+Varyings LitPassVertex(Attributes input)
 {
     Varyings output;
     //从input中提取实例的ID并将其存储在其他实例化宏所依赖的全局静态变量中
@@ -54,7 +54,7 @@ Varyings UnlitPassVertex(Attributes input)
     return output;
 }
 
-float4 UnlitPassFragment(Varyings input) : SV_TARGET
+float4 LitPassFragment(Varyings input) : SV_TARGET
 {
     //从input中提取实例的ID并将其存储在其他实例化宏所依赖的全局静态变量中
     UNITY_SETUP_INSTANCE_ID(input);

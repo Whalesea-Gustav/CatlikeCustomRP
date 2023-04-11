@@ -1,4 +1,4 @@
-Shader "CatSRP/UnlitPro"
+Shader "CatSRP/litPro"
 {
         Properties
     {
@@ -6,7 +6,7 @@ Shader "CatSRP/UnlitPro"
         //[optional: attribute] name("display text in Inspector", type name) = default value
         _BaseMap("Texture", 2D) = "white" {}
         
-        _BaseColor("Color",Color) = (1.0,1.0,1.0,1.0)
+        _BaseColor("Color",Color) = (0.5,0.5,0.5,1.0)
         
         _Cutoff ("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
         
@@ -22,15 +22,19 @@ Shader "CatSRP/UnlitPro"
     {
         Pass
         {
+            Tags {
+				"LightMode" = "CustomLit"
+			}
+            
             Blend [_SrcBlend] [_DstBlend]
             ZWrite [_ZWrite]
             
             HLSLPROGRAM
             #pragma shader_feature _CLIPPING
             #pragma multi_compile_instancing
-            #pragma vertex UnlitPassVertex
-            #pragma fragment UnlitPassFragment
-            #include "UnlitPass.hlsl"
+            #pragma vertex LitPassVertex
+			#pragma fragment LitPassFragment
+			#include "LitPass.hlsl"
             ENDHLSL
         }
     }

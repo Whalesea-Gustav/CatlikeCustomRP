@@ -6,7 +6,8 @@ public partial class CameraRenderer {
 	const string bufferName = "Render Camera";
 
 	static ShaderTagId unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit");
-
+	static ShaderTagId litShaderTagId = new ShaderTagId("CustomLit");
+	
 	private static ShaderTagId[] extraShaderTagIds =
 	{
 		new ShaderTagId("CatSRP/UnlitPro")
