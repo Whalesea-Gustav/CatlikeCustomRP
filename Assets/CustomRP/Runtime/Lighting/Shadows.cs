@@ -35,6 +35,11 @@ public class Shadows {
         "_DIRECTIONAL_PCF7",
     };
     
+    static string[] cascadeBlendKeywords = {
+        "_CASCADE_BLEND_SOFT",
+        "_CASCADE_BLEND_DITHER"
+    };
+    
     static Vector4[] 
         cascadeCullingSpheres = new Vector4[maxCascades],
         cascadeData = new Vector4[maxCascades];
@@ -73,6 +78,7 @@ public class Shadows {
         return Vector3.zero;
     }
     
+    //Special for filter keywords
     void SetKeywords () {
         int enabledIndex = (int)settings.directional.filter - 1;
         for (int i = 0; i < directionalFilterKeywords.Length; i++) {
@@ -81,6 +87,18 @@ public class Shadows {
             }
             else {
                 buffer.DisableShaderKeyword(directionalFilterKeywords[i]);
+            }
+        }
+    }
+    
+    void SetKeywords (string[] keywords, int enabledIndex) {
+        //int enabledIndex = (int)settings.directional.filter - 1;
+        for (int i = 0; i < keywords.Length; i++) {
+            if (i == enabledIndex) {
+                buffer.EnableShaderKeyword(keywords[i]);
+            }
+            else {
+                buffer.DisableShaderKeyword(keywords[i]);
             }
         }
     }
@@ -180,7 +198,12 @@ public class Shadows {
                 1f / (1f - f * f))
             );
         buffer.SetGlobalMatrixArray(dirShadowMatricesId, dirShadowMatrices);
-        SetKeywords();
+        SetKeywords(
+            directionalFilterKeywords, (int)settings.directional.filter - 1
+        );
+        SetKeywords(
+            cascadeBlendKeywords, (int)settings.directional.cascadeBlend - 1
+        );
         buffer.SetGlobalVector(
             shadowAtlasSizeId, new Vector4(atlasSize, 1f / atlasSize)
         );
@@ -249,6 +272,9 @@ public class Shadows {
         int tileOffset = index * cascadeCount;
         Vector3 ratios = settings.directional.CascadeRatios;
 		
+        float cullingFactor =
+            Mathf.Max(0f, 0.8f - settings.directional.cascadeFade);
+        
         for (int i = 0; i < cascadeCount; i++) {
             cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(
                 light.visibleLightIndex, i, cascadeCount, ratios, tileSize, 
@@ -257,6 +283,7 @@ public class Shadows {
                 out ShadowSplitData splitData
             );
             
+            splitData.shadowCascadeBlendCullingFactor = cullingFactor;
             shadowSettings.splitData = splitData;
             
             //only need to calculate cascade culling sphere

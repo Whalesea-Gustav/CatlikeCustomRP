@@ -46,6 +46,7 @@ struct DirectionalShadowData {
 
 struct ShadowData {
     int cascadeIndex;
+    float cascadeBlend;
     float strength;
 };
 
@@ -55,6 +56,7 @@ float FadedShadowStrength (float distance, float scale, float fade) {
 
 ShadowData GetShadowData (Surface surfaceWS) {
     ShadowData data;
+    data.cascadeBlend = 1.0;
     data.strength = FadedShadowStrength(
         surfaceWS.depth, _ShadowDistanceFade.x, _ShadowDistanceFade.y
     );
@@ -63,11 +65,15 @@ ShadowData GetShadowData (Surface surfaceWS) {
         float4 sphere = _CascadeCullingSpheres[i];
         float distanceSqr = DistanceSquared(surfaceWS.position, sphere.xyz);
         if (distanceSqr < sphere.w) {
+            float fade = FadedShadowStrength(
+                distanceSqr, _CascadeData[i].x, _ShadowDistanceFade.z
+            );
             if (i == _CascadeCount - 1) {
-                data.strength *= FadedShadowStrength(
-                    //in tutorial scale == _CascadeData[i].x, which is wrong settings
-                    distanceSqr, _CascadeData[i].x, _ShadowDistanceFade.z
-                );
+                data.strength *= fade;
+            }
+            else
+            {
+                data.cascadeBlend = fade;
             }
             break;
         }
@@ -77,6 +83,15 @@ ShadowData GetShadowData (Surface surfaceWS) {
     {
         data.strength = 0.0;
     }
+    #if defined(_CASCADE_BLEND_DITHER)
+    else if (data.cascadeBlend < surfaceWS.dither) {
+        i += 1;
+    }
+    #endif
+    
+    #if !defined(_CASCADE_BLEND_SOFT)
+    data.cascadeBlend = 1.0;
+    #endif
     
     data.cascadeIndex = i;
     return data;
@@ -111,6 +126,9 @@ float FilterDirectionalShadow (float3 positionSTS) {
 //计算阴影衰减值，返回值[0,1]，0代表阴影衰减最大（片元完全在阴影中），1代表阴影衰减最少，片元完全被光照射。而[0,1]的中间值代表片元有一部分在阴影中
 float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowData global, Surface surfaceWS)
 {
+    #if !defined(_RECEIVE_SHADOWS)
+    return 1.0;
+    #endif
     //忽略不开启阴影和阴影强度为0的光源
     if(directional.strength <= 0.0)
     {
@@ -122,6 +140,19 @@ float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowD
     float3 positionSTS = mul(_DirectionalShadowMatrices[directional.tileIndex], float4(surfaceWS.position + normalBias,1.0)).xyz;
     //采样Tile得到阴影强度值
     float shadow = FilterDirectionalShadow(positionSTS);
+
+    if (global.cascadeBlend < 1.0) {
+        normalBias = surfaceWS.normal *
+            (directional.normalBias * _CascadeData[global.cascadeIndex + 1].y);
+        positionSTS = mul(
+            _DirectionalShadowMatrices[directional.tileIndex + 1],
+            float4(surfaceWS.position + normalBias, 1.0)
+        ).xyz;
+        shadow = lerp(
+            FilterDirectionalShadow(positionSTS), shadow, global.cascadeBlend
+        );
+    }
+    
     //考虑光源的阴影强度，strength为0，依然没有阴影
     return lerp(1.0, shadow, directional.strength);
 }

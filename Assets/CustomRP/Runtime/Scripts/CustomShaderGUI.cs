@@ -10,9 +10,24 @@ public class CustomShaderGUI : ShaderGUI
     //当前选中的material是数组形式，因为我们可以同时多选多个使用同一Shader的材质进行编辑。
     private Object[] materials;
     private MaterialProperty[] properties;
-
+    
+    enum ShadowMode {
+        On, Clip, Dither, Off
+    }
+    
+    ShadowMode Shadows {
+        set {
+            {
+                SetProperty("_Shadows", (float) value);
+                SetKeyword("_SHADOWS_CLIP", value == ShadowMode.Clip);
+                SetKeyword("_SHADOWS_DITHER", value == ShadowMode.Dither);
+            }
+        }
+    }
+    
     public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
     {
+        EditorGUI.BeginChangeCheck();
         //首先绘制材质Inspector下原本所有的GUI，例如材质的Properties等
         base.OnGUI(materialEditor, properties);
         //将editor、material、properties存储到字段中
@@ -31,6 +46,10 @@ public class CustomShaderGUI : ShaderGUI
             ClipPreset();
             FadePreset();
             TransparentPreset();
+        }
+        
+        if (EditorGUI.EndChangeCheck()) {
+            SetShadowCasterPass();
         }
     }
 
@@ -68,6 +87,17 @@ public class CustomShaderGUI : ShaderGUI
         }
     }
 
+    void SetShadowCasterPass () {
+        MaterialProperty shadows = FindProperty("_Shadows", properties, false);
+        if (shadows == null || shadows.hasMixedValue) {
+            return;
+        }
+        bool enabled = shadows.floatValue < (float)ShadowMode.Off;
+        foreach (Material m in materials) {
+            m.SetShaderPassEnabled("ShadowCaster", enabled);
+        }
+    }
+    
     /// <summary>
     /// 因为我们之前在Lit.shader中使用Toggle标签的属性来切换关键字，因此在通过代码开关关键字时也要对Toggle操作以同步
     /// </summary>
