@@ -1,7 +1,6 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
-
 public class CustomShaderGUI : ShaderGUI
 {
     //存储当前折叠标签状态

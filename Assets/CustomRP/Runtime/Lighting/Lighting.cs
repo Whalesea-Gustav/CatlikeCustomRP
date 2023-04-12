@@ -8,6 +8,8 @@ public class Lighting
     private const string bufferName = "Lighting";
     
     CullingResults cullingResults;
+
+    private Shadows shadows = new Shadows();
     
     const int maxDirLightCount = 4;
     
@@ -16,23 +18,28 @@ public class Lighting
         //dirLightDirectionId = Shader.PropertyToID("_DirectionalLightDirection");
         dirLightCountId = Shader.PropertyToID("_DirectionalLightCount"),
         dirLightColorsId = Shader.PropertyToID("_DirectionalLightColors"),
-        dirLightDirectionsId = Shader.PropertyToID("_DirectionalLightDirections");
+        dirLightDirectionsId = Shader.PropertyToID("_DirectionalLightDirections"),
+        dirLightShadowDataId = Shader.PropertyToID("_DirectionalLightShadowData");
     
     static Vector4[]
         dirLightColors = new Vector4[maxDirLightCount],
-        dirLightDirections = new Vector4[maxDirLightCount];
+        dirLightDirections = new Vector4[maxDirLightCount],
+        dirLightShadowData = new Vector4[maxDirLightCount];
 
     private CommandBuffer buffer = new CommandBuffer()
     {
         name = bufferName
     };
 
-    public void Setup(ScriptableRenderContext context, CullingResults cullingResults)
+    public void Setup(ScriptableRenderContext context, CullingResults cullingResults,
+        ShadowSettings shadowSettings)
     {
         this.cullingResults = cullingResults;
         
         buffer.BeginSample(bufferName);
+        shadows.Setup(context, cullingResults, shadowSettings);
         SetupLights();
+        shadows.Render();
         buffer.EndSample(bufferName);
         //再次提醒这里只是提交CommandBuffer到Context的指令队列中，只有等到context.Submit()才会真正依次执行指令
         context.ExecuteCommandBuffer(buffer);
@@ -43,6 +50,7 @@ public class Lighting
     {
         dirLightColors[index] = visibleLight.finalColor;
         dirLightDirections[index] = -visibleLight.localToWorldMatrix.GetColumn(2);
+        dirLightShadowData[index] = shadows.ReserveDirectionalShadows(visibleLight.light, index);
     }
     
     void SetupLights () {
@@ -60,5 +68,10 @@ public class Lighting
         buffer.SetGlobalInt(dirLightCountId, visibleLights.Length);
         buffer.SetGlobalVectorArray(dirLightColorsId, dirLightColors);
         buffer.SetGlobalVectorArray(dirLightDirectionsId, dirLightDirections);
+        buffer.SetGlobalVectorArray(dirLightShadowDataId, dirLightShadowData);
+    }
+    
+    public void Cleanup () {
+        shadows.Cleanup();
     }
 }

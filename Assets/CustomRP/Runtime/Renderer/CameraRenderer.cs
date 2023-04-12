@@ -25,26 +25,34 @@ public partial class CameraRenderer {
 
 	private Lighting lighting = new Lighting();
 	
-	public void Render (ScriptableRenderContext context, Camera camera, bool useDynamicBatching = true, bool useGPUInstancing = false) {
+	public void Render (ScriptableRenderContext context, Camera camera, 
+		bool useDynamicBatching, bool useGPUInstancing,
+		ShadowSettings shadowSettings) {
 		this.context = context;
 		this.camera = camera;
 
 		PrepareBuffer();
 		PrepareForSceneWindow();
-		if (!Cull()) {
+		if (!Cull(shadowSettings.maxDistance)) {
 			return;
 		}
-
+		
+		buffer.BeginSample(SampleName); // nest sampling for shadow
+		ExecuteBuffer();
+		lighting.Setup(context, cullingResults, shadowSettings);
+		buffer.EndSample(SampleName);
+		
 		Setup();
-		lighting.Setup(context, cullingResults);
 		DrawVisibleGeometry(useDynamicBatching, useGPUInstancing);
 		DrawUnsupportedShaders();
 		DrawGizmos();
+		lighting.Cleanup();
 		Submit();
 	}
 
-	bool Cull () {
+	bool Cull (float maxShadowDistance) {
 		if (camera.TryGetCullingParameters(out ScriptableCullingParameters p)) {
+			p.shadowDistance = Mathf.Min(maxShadowDistance, camera.farClipPlane);
 			cullingResults = context.Cull(ref p);
 			return true;
 		}
@@ -79,6 +87,8 @@ public partial class CameraRenderer {
 		var sortingSettings = new SortingSettings(camera) {
 			criteria = SortingCriteria.CommonOpaque
 		};
+		
+		//unlit
 		var drawingSettings = new DrawingSettings(
 			unlitShaderTagId, sortingSettings
 		)
@@ -86,7 +96,7 @@ public partial class CameraRenderer {
 			enableDynamicBatching = useDynamicBatching,
 			enableInstancing = useGPUInstancing
 		};
-		
+		//extraShader
 		for (int i = 0; i < extraShaderTagIds.Length; i++) {
 			drawingSettings.SetShaderPassName(i+1, extraShaderTagIds[i]);
 		}
