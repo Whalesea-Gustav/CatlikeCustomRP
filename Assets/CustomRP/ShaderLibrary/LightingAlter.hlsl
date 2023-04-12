@@ -25,17 +25,19 @@ float3 GetLighting (Surface surface, BRDF brdf, Light light) {
 
 //GetLighting返回光照结果，这个GetLighting只传入一个surface
 float3 GetLighting (Surface surface) {
+    ShadowData shadowData = GetShadowData(surface);
     float3 color = 0.0;
     for (int i = 0; i < GetDirectionalLightCount(); i++) {
-        color += GetLighting(surface, GetDirectionalLight(i, surface));
+        color += GetLighting(surface, GetDirectionalLight(i, surface, shadowData));
     }
     return color;
 }
 
 float3 GetLighting (Surface surface, BRDF brdf) {
+    ShadowData shadowData = GetShadowData(surface);
     float3 color = 0.0;
     for (int i = 0; i < GetDirectionalLightCount(); i++) {
-        color += GetLighting(surface, brdf, GetDirectionalLight(i, surface));
+        color += GetLighting(surface, brdf, GetDirectionalLight(i, surface, shadowData));
     }
     return color;
 }
