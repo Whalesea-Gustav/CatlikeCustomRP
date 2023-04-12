@@ -1,6 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 [System.Serializable]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class ShadowSettings {
 
     [Min(0.001f)]
@@ -13,6 +15,10 @@ public class ShadowSettings {
     public enum TextureSize {
         _256 = 256, _512 = 512, _1024 = 1024,
         _2048 = 2048, _4096 = 4096, _8192 = 8192
+    }
+    
+    public enum FilterMode {
+        PCF2x2, PCF3x3, PCF5x5, PCF7x7
     }
     
     [System.Serializable]
@@ -28,12 +34,15 @@ public class ShadowSettings {
         [Range(0.001f, 1f)]
         public float cascadeFade;
         
+        public FilterMode filter;
+        
         public Vector3 CascadeRatios =>
             new Vector3(cascadeRatio1, cascadeRatio2, cascadeRatio3);
     }
 
     public Directional directional = new Directional {
         atlasSize = TextureSize._1024,
+        filter = FilterMode.PCF2x2,
         cascadeCount = 4, 
         cascadeRatio1 = 0.1f,
         cascadeRatio2 = 0.25f,

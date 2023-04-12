@@ -2,6 +2,19 @@
 #ifndef CUSTOM_SHADOWS_ALTER_INCLUDED
 #define CUSTOM_SHADOWS_ALTER_INCLUDED
 
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Shadow/ShadowSamplingTent.hlsl"
+
+#if defined(_DIRECTIONAL_PCF3)
+    #define DIRECTIONAL_FILTER_SAMPLES 4
+    #define DIRECTIONAL_FILTER_SETUP SampleShadow_ComputeSamples_Tent_3x3
+#elif defined(_DIRECTIONAL_PCF5)
+    #define DIRECTIONAL_FILTER_SAMPLES 9
+    #define DIRECTIONAL_FILTER_SETUP SampleShadow_ComputeSamples_Tent_5x5
+#elif defined(_DIRECTIONAL_PCF7)
+    #define DIRECTIONAL_FILTER_SAMPLES 16
+    #define DIRECTIONAL_FILTER_SETUP SampleShadow_ComputeSamples_Tent_7x7
+#endif
+
 //宏定义最大支持阴影的方向光源数，要与CPU端同步，为4
 #define MAX_SHADOWED_DIRECTIONAL_LIGHT_COUNT 4
 #define MAX_CASCADE_COUNT 4
@@ -19,13 +32,16 @@ SAMPLER_CMP(SHADOW_SAMPLER);
 CBUFFER_START(_CustonShadows)
     int _CascadeCount;
     float4 _CascadeCullingSpheres[MAX_CASCADE_COUNT];
+    float4 _CascadeData[MAX_CASCADE_COUNT];
     float4x4 _DirectionalShadowMatrices[MAX_SHADOWED_DIRECTIONAL_LIGHT_COUNT * MAX_CASCADE_COUNT];
+    float4 _ShadowAtlasSize;
     float4 _ShadowDistanceFade;
 CBUFFER_END
 
 struct DirectionalShadowData {
     float strength;
     int tileIndex;
+    float normalBias;
 };
 
 struct ShadowData {
@@ -49,7 +65,8 @@ ShadowData GetShadowData (Surface surfaceWS) {
         if (distanceSqr < sphere.w) {
             if (i == _CascadeCount - 1) {
                 data.strength *= FadedShadowStrength(
-                    distanceSqr, 1.0 / sphere.w, _ShadowDistanceFade.z
+                    //in tutorial scale == _CascadeData[i].x, which is wrong settings
+                    distanceSqr, _CascadeData[i].x, _ShadowDistanceFade.z
                 );
             }
             break;
@@ -73,20 +90,40 @@ float SampleDirectionalShadowAtlas(float3 positionSTS)
     return SAMPLE_TEXTURE2D_SHADOW(_DirectionalShadowAtlas,SHADOW_SAMPLER,positionSTS);
 }
 
+float FilterDirectionalShadow (float3 positionSTS) {
+    #if defined(DIRECTIONAL_FILTER_SETUP)
+    float weights[DIRECTIONAL_FILTER_SAMPLES];
+    float2 positions[DIRECTIONAL_FILTER_SAMPLES];
+    float4 size = _ShadowAtlasSize.yyxx;
+    DIRECTIONAL_FILTER_SETUP(size, positionSTS.xy, weights, positions);
+    float shadow = 0;
+    for (int i = 0; i < DIRECTIONAL_FILTER_SAMPLES; i++) {
+        shadow += weights[i] * SampleDirectionalShadowAtlas(
+            float3(positions[i].xy, positionSTS.z)
+        );
+    }
+    return shadow;
+    #else
+    return SampleDirectionalShadowAtlas(positionSTS);
+    #endif
+}
+
 //计算阴影衰减值，返回值[0,1]，0代表阴影衰减最大（片元完全在阴影中），1代表阴影衰减最少，片元完全被光照射。而[0,1]的中间值代表片元有一部分在阴影中
-float GetDirectionalShadowAttenuation(DirectionalShadowData data, Surface surfaceWS)
+float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowData global, Surface surfaceWS)
 {
     //忽略不开启阴影和阴影强度为0的光源
-    if(data.strength <= 0.0)
+    if(directional.strength <= 0.0)
     {
         return 1.0;
     }
+    float3 normalBias = surfaceWS.normal *
+        (directional.normalBias * _CascadeData[global.cascadeIndex].y);
     //根据对应Tile阴影变换矩阵和片元的世界坐标计算Tile上的像素坐标STS
-    float3 positionSTS = mul(_DirectionalShadowMatrices[data.tileIndex], float4(surfaceWS.position,1.0)).xyz;
+    float3 positionSTS = mul(_DirectionalShadowMatrices[directional.tileIndex], float4(surfaceWS.position + normalBias,1.0)).xyz;
     //采样Tile得到阴影强度值
-    float shadow = SampleDirectionalShadowAtlas(positionSTS);
+    float shadow = FilterDirectionalShadow(positionSTS);
     //考虑光源的阴影强度，strength为0，依然没有阴影
-    return lerp(1.0,shadow,data.strength);
+    return lerp(1.0, shadow, directional.strength);
 }
 
 #endif
