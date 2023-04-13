@@ -4,6 +4,7 @@
 #include "../ShaderLibrary/Common.hlsl"
 #include "../ShaderLibrary/Surface.hlsl"
 #include "../ShaderLibrary/ShadowsAlter.hlsl"
+#include "../ShaderLibrary/GIAlter.hlsl"
 #include "../ShaderLibrary/LightAlter.hlsl"
 #include "../ShaderLibrary/BRDF.hlsl"
 #include "../ShaderLibrary/LightingAlter.hlsl"
@@ -106,9 +107,10 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
     #else
         BRDF brdf = GetBRDF(surface);
     #endif
+
+    GI gi = GetGI(0.0);
     
-    surface.color = GetLighting(surface, brdf);
-    
+    surface.color = GetLighting(surface, brdf, gi);
     return float4(surface.color,surface.alpha);
 }
 
