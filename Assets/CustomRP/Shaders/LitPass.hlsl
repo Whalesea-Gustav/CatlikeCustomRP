@@ -1,7 +1,6 @@
 #ifndef CUSTOM_UNLIT_PASS_INCLUDED
 #define CUSTOM_UNLIT_PASS_INCLUDED
 
-#include "../ShaderLibrary/Common.hlsl"
 #include "../ShaderLibrary/Surface.hlsl"
 #include "../ShaderLibrary/ShadowsAlter.hlsl"
 #include "../ShaderLibrary/GIAlter.hlsl"
@@ -15,19 +14,6 @@
 // float4 _BaseColor;
 // CBUFFER_END
 
-//在Shader的全局变量区定义纹理的句柄和其采样器，通过名字来匹配
-TEXTURE2D(_BaseMap);
-SAMPLER(sampler_BaseMap);
-
-
-//为了使用GPU Instancing，每实例数据要构建成数组,使用UNITY_INSTANCING_BUFFER_START(END)来包裹每实例数据
-UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
-    UNITY_DEFINE_INSTANCED_PROP(float4, _BaseMap_ST)
-    UNITY_DEFINE_INSTANCED_PROP(float4, _BaseColor)
-    UNITY_DEFINE_INSTANCED_PROP(float, _Cutoff)
-    UNITY_DEFINE_INSTANCED_PROP(float, _Metallic)
-    UNITY_DEFINE_INSTANCED_PROP(float, _Smoothness)
-UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
 
 //使用结构体定义顶点着色器的输入，一个是为了代码更整洁，一个是为了支持GPU Instancing（获取object的index）
 struct Attributes
@@ -35,6 +21,8 @@ struct Attributes
     float3 positionOS:POSITION;
     float3 normalOS : NORMAL;
     float2 baseUV:TEXCOORD0;
+    GI_ATTRIBUTE_DATA
+    
     //定义GPU Instancing使用的每个实例的ID，告诉GPU当前绘制的是哪个Object
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
@@ -46,6 +34,8 @@ struct Varyings
     float3 positionWS : VAR_POSITION;
     float3 normalWS : VAR_NORMAL;
     float2 baseUV:VAR_BASE_UV;
+    GI_VARYINGS_DATA
+    
     //定义每一个片元对应的object的唯一ID
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
@@ -57,6 +47,8 @@ Varyings LitPassVertex(Attributes input)
     UNITY_SETUP_INSTANCE_ID(input);
     //将实例ID传递给output
     UNITY_TRANSFER_INSTANCE_ID(input,output);
+    TRANSFER_GI_DATA(input, output);
+    
     float3 positionWS = TransformObjectToWorld(input.positionOS);
     output.positionWS = positionWS;
     output.positionCS = TransformWorldToHClip(positionWS);
@@ -72,7 +64,7 @@ Varyings LitPassVertex(Attributes input)
     output.normalWS = TransformObjectToWorldNormal(input.normalOS);
     
     float4 baseST = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial,_BaseMap_ST);
-    output.baseUV = input.baseUV * baseST.xy + baseST.zw;
+    output.baseUV = TransformBaseUV(input.baseUV);
     return output;
 }
 
@@ -80,13 +72,11 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
 {
     //从input中提取实例的ID并将其存储在其他实例化宏所依赖的全局静态变量中
     UNITY_SETUP_INSTANCE_ID(input);
-    float4 baseMap = SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,input.baseUV);
-    //通过UNITY_ACCESS_INSTANCED_PROP获取每实例数据
-    float4 baseColor =  UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseColor);
-    float4 base = baseMap * baseColor;
+    
+    float4 base = GetBase(input.baseUV);
     
     #if defined(_CLIPPING)
-        clip(base.a - UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Cutoff));
+        clip(base.a - GetCutoff(input.baseUV));
     #endif
 
     //在片元着色器中构建Surface结构体，即物体表面属性，构建完成之后就可以在片元着色器中计算光照
@@ -98,8 +88,8 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
     surface.color = base.rgb;
     surface.alpha = base.a;
 
-    surface.metallic = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Metallic);
-    surface.smoothness = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Smoothness);
+    surface.metallic = GetMetallic(input.baseUV);
+    surface.smoothness = GetSmoothness(input.baseUV);
     surface.dither = InterleavedGradientNoise(input.positionCS.xy, 0);
     
     #if defined(_PREMULTIPLY_ALPHA)
@@ -108,8 +98,7 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
         BRDF brdf = GetBRDF(surface);
     #endif
 
-    GI gi = GetGI(0.0);
-    
+    GI gi = GetGI(GI_FRAGMENT_DATA(input), surface);
     surface.color = GetLighting(surface, brdf, gi);
     return float4(surface.color,surface.alpha);
 }

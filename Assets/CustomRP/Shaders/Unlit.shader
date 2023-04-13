@@ -14,6 +14,7 @@ Shader "CatSRP/Unlit"
     {
         HLSLINCLUDE
         #include "../ShaderLibrary/Common.hlsl"
+        #include "UnlitInput.hlsl"
         ENDHLSL
 
         Pass
