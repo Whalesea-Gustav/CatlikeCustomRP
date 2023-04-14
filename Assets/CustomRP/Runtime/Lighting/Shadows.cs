@@ -20,6 +20,8 @@ public class Shadows {
 
     const int maxCascades = 4;
     
+    bool useShadowMask;
+    
     static int
         dirShadowAtlasId = Shader.PropertyToID("_DirectionalShadowAtlas"),
         dirShadowMatricesId = Shader.PropertyToID("_DirectionalShadowMatrices"),
@@ -38,6 +40,10 @@ public class Shadows {
     static string[] cascadeBlendKeywords = {
         "_CASCADE_BLEND_SOFT",
         "_CASCADE_BLEND_DITHER"
+    };
+    
+    static string[] shadowMaskKeywords = {
+        "_SHADOW_MASK_DISTANCE"
     };
     
     static Vector4[] 
@@ -63,6 +69,16 @@ public class Shadows {
         if (ShadowedDirectionalLightCount < maxShadowedDirectionalLightCount &&
             light.shadows != LightShadows.None && light.shadowStrength > 0f &&
             cullingResults.GetShadowCasterBounds(visibleLightIndex, out Bounds b)) {
+           
+            //check whether useShadowMask or not
+            LightBakingOutput lightBaking = light.bakingOutput;
+            if (
+                lightBaking.lightmapBakeType == LightmapBakeType.Mixed &&
+                lightBaking.mixedLightingMode == MixedLightingMode.Shadowmask
+            ) {
+                useShadowMask = true;
+            }
+            
             shadowedDirectionalLights[ShadowedDirectionalLightCount] =
                 new ShadowedDirectionalLight {
                     visibleLightIndex = visibleLightIndex,
@@ -141,6 +157,8 @@ public class Shadows {
         this.settings = settings;
         
         ShadowedDirectionalLightCount = 0;
+
+        useShadowMask = false;
     }
 
     void ExecuteBuffer () {
@@ -159,6 +177,12 @@ public class Shadows {
                 32, FilterMode.Bilinear, RenderTextureFormat.Shadowmap
             );
         }
+        
+        
+        buffer.BeginSample(bufferName);
+        SetKeywords(shadowMaskKeywords, useShadowMask ? 0 : -1);
+        buffer.EndSample(bufferName);
+        ExecuteBuffer();
     }
 
     void RenderDirectionalShadows()
