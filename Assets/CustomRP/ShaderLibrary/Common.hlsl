@@ -22,6 +22,9 @@
 //我们直接使用SRP库中已经帮我们写好的函数
 //在include UnityInstancing.hlsl之前需要定义Unity_Matrix_M和其他宏，以及SpaceTransform.hlsl
 //UnityInstancing.hlsl重新定义了一些宏用于访问实例化数据数组
+#if defined(_SHADOW_MASK_DISTANCE)
+#define SHADOWS_SHADOWMASK
+#endif
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
 //用于解码法线贴图

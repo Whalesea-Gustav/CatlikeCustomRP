@@ -98,7 +98,9 @@ public partial class CameraRenderer {
 			perObjectData = PerObjectData.Lightmaps |
 			                PerObjectData.ShadowMask |
 			                PerObjectData.LightProbe |
-			                PerObjectData.LightProbeProxyVolume 
+			                PerObjectData.LightProbeProxyVolume |
+			                PerObjectData.OcclusionProbe |
+			                PerObjectData.OcclusionProbeProxyVolume
 		};
 		//extraShader
 		for (int i = 0; i < extraShaderTagIds.Length; i++) {
