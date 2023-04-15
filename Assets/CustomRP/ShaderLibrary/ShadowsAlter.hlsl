@@ -239,7 +239,9 @@ float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowD
         shadow = GetBakedShadow(global.shadowMask, abs(directional.strength));
     }
     else {
+        //realtime shadow
         shadow = GetCascadedShadow(directional, global, surfaceWS);
+        //mix realtime shadow with shadow mask
         shadow = MixBakedAndRealtimeShadows(global, shadow, directional.strength);
     }
     return shadow;

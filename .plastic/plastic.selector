@@ -1,0 +1,4 @@
+repository "CatlikeCustomRP@wechat_os_qy01epwzvdvd1jms-nkc6grbi@cloud.cn"
+  path "/"
+    br "/main"
+    co "/main"
