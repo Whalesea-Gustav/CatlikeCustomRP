@@ -696,7 +696,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
-  fresnel: 1
+  fresnel: 0.95
 --- !u!65 &392216654
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -807,7 +807,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96e467dbb68bc6445bc07495fa106a85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseColor: {r: 1, g: 1, b: 1, a: 1}
+  baseColor: {r: 1, g: 0.35283017, b: 0.35283017, a: 1}
   emissionColor: {r: 0, g: 0, b: 0, a: 1}
   alphaCutoff: 0.5
   metallic: 0.58
@@ -1917,7 +1917,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
-  fresnel: 1
+  fresnel: 0.77
 --- !u!65 &984312329
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2497,7 +2497,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
-  fresnel: 0.5
+  fresnel: 1
 --- !u!65 &1295887698
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3010,8 +3010,8 @@ MonoBehaviour:
   emissionColor: {r: 0, g: 0, b: 0, a: 1}
   alphaCutoff: 0.5
   metallic: 0
-  smoothness: 0.5
-  fresnel: 1
+  smoothness: 0.43
+  fresnel: 0.77
 --- !u!64 &1735047555
 MeshCollider:
   m_ObjectHideFlags: 0
