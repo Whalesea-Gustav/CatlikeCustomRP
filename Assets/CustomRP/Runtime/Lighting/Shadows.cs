@@ -46,6 +46,8 @@ public class Shadows {
         "_SHADOW_MASK_ALWAYS",
         "_SHADOW_MASK_DISTANCE"
     };
+
+    
     
     static Vector4[] 
         cascadeCullingSpheres = new Vector4[maxCascades],

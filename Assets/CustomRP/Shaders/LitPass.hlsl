@@ -3,9 +3,9 @@
 
 #include "../ShaderLibrary/Surface.hlsl"
 #include "../ShaderLibrary/ShadowsAlter.hlsl"
-#include "../ShaderLibrary/GIAlter.hlsl"
 #include "../ShaderLibrary/LightAlter.hlsl"
 #include "../ShaderLibrary/BRDF.hlsl"
+#include "../ShaderLibrary/GIAlter.hlsl"
 #include "../ShaderLibrary/LightingAlter.hlsl"
 
 //使用Core RP Library的CBUFFER宏指令包裹材质属性，让Shader支持SRP Batcher，同时在不支持SRP Batcher的平台自动关闭它。
@@ -72,6 +72,7 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
 {
     //从input中提取实例的ID并将其存储在其他实例化宏所依赖的全局静态变量中
     UNITY_SETUP_INSTANCE_ID(input);
+    ClipLOD(input.positionCS.xy, unity_LODFade.x);
     
     float4 base = GetBase(input.baseUV);
     
@@ -90,15 +91,16 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
 
     surface.metallic = GetMetallic(input.baseUV);
     surface.smoothness = GetSmoothness(input.baseUV);
+    surface.fresnelStrength = GetFresnel(input.baseUV);
     surface.dither = InterleavedGradientNoise(input.positionCS.xy, 0);
-    
+    surface.occlusion = 1.0;
     #if defined(_PREMULTIPLY_ALPHA)
         BRDF brdf = GetBRDF(surface, true);
     #else
         BRDF brdf = GetBRDF(surface);
     #endif
 
-    GI gi = GetGI(GI_FRAGMENT_DATA(input), surface);
+    GI gi = GetGI(GI_FRAGMENT_DATA(input), surface, brdf);
     surface.color = GetLighting(surface, brdf, gi);
     surface.color += GetEmission(input.baseUV);
     return float4(surface.color,surface.alpha);

@@ -81,13 +81,24 @@ float3 DirectBRDF(Surface surface,BRDF brdf,Light light)
     return SpecularStrength(surface,brdf,light) * brdf.specular + brdf.diffuse;
 }
 
+float3 IndirectBRDF_v1 (
+    Surface surface, BRDF brdf, float3 diffuse, float3 specular
+) {
+    float3 reflection = specular * brdf.specular;
+    reflection /= brdf.roughness * brdf.roughness + 1.0;
+    return diffuse * brdf.diffuse + reflection;
+}
+
 //间接光照部分，主要包括环境光照Specular
 float3 IndirectBRDF(Surface surface, BRDF brdf, float3 diffuse, float3 specular)
 {
     //计算菲涅尔反射强度,物体表面法线和观察方向越垂直，菲涅尔强度越大
     float fresnelStrength = surface.fresnelStrength * Pow4(1.0 - saturate(dot(surface.normal,surface.viewDirection)));
+    //fresnelStrength = 0.5;
     //specular为物体表面接收到的高光能量，brdf.specular为物体表面高光颜色（即反射出的光比例）
     float3 reflection = specular * lerp(brdf.specular,brdf.fresnel,fresnelStrength);
+    //reflection = specular * brdf.specular;
+    //reflection = specular * brdf.fresnel;
     //粗糙度会减弱部分我们看到的specular反射，考虑这个因素，平方+1的目的是让低粗糙度对高光影响变小，而大粗糙度影响至多减弱一半高光强度
     reflection /= brdf.roughness * brdf.roughness + 1.0;
     return (diffuse * brdf.diffuse + reflection) * surface.occlusion;
