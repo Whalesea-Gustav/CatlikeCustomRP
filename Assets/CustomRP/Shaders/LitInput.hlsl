@@ -5,6 +5,7 @@
 
 TEXTURE2D(_BaseMap);
 TEXTURE2D(_MaskMap);
+TEXTURE2D(_NormalMap);
 TEXTURE2D(_EmissionMap);
 SAMPLER(sampler_BaseMap);
 
@@ -16,6 +17,7 @@ UNITY_DEFINE_INSTANCED_PROP(float4, _BaseMap_ST)
 UNITY_DEFINE_INSTANCED_PROP(float4, _DetailMap_ST)
 UNITY_DEFINE_INSTANCED_PROP(float4, _BaseColor)
 UNITY_DEFINE_INSTANCED_PROP(float4, _EmissionColor)
+UNITY_DEFINE_INSTANCED_PROP(float, _NormalScale)
 UNITY_DEFINE_INSTANCED_PROP(float, _Cutoff)
 UNITY_DEFINE_INSTANCED_PROP(float, _Metallic)
 UNITY_DEFINE_INSTANCED_PROP(float, _Occlusion)
@@ -63,6 +65,13 @@ float4 GetBase (float2 baseUV, float2 detailUV) {
 float4 GetMask(float2 baseUV)
 {
     return SAMPLE_TEXTURE2D(_MaskMap, sampler_BaseMap, baseUV);
+}
+
+float3 GetNormalTS (float2 baseUV) {
+    float4 map = SAMPLE_TEXTURE2D(_NormalMap, sampler_BaseMap, baseUV);
+    float scale = INPUT_PROP(_NormalScale);
+    float3 normal = DecodeNormal(map, scale);
+    return normal;
 }
 
 float3 GetEmission(float2 baseUV)

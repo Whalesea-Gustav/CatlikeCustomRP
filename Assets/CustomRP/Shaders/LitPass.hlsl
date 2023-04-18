@@ -20,6 +20,7 @@ struct Attributes
 {
     float3 positionOS:POSITION;
     float3 normalOS : NORMAL;
+    float4 tangentOS : TANGENT;
     float2 baseUV:TEXCOORD0;
     GI_ATTRIBUTE_DATA
     
@@ -33,6 +34,7 @@ struct Varyings
     float4 positionCS:SV_POSITION;
     float3 positionWS : VAR_POSITION;
     float3 normalWS : VAR_NORMAL;
+    float4 tangentWS : VAR_TANGENT;
     float2 baseUV:VAR_BASE_UV;
     float2 detailUV : VAR_DETAIL_UV;
     GI_VARYINGS_DATA
@@ -63,7 +65,8 @@ Varyings LitPassVertex(Attributes input)
     #endif
     
     output.normalWS = TransformObjectToWorldNormal(input.normalOS);
-    
+    output.tangentWS =
+        float4(TransformObjectToWorldDir(input.tangentOS.xyz), input.tangentOS.w);
     float4 baseST = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial,_BaseMap_ST);
     output.baseUV = TransformBaseUV(input.baseUV);
     output.detailUV = TransformDetailUV(input.baseUV);
@@ -85,7 +88,10 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
     //在片元着色器中构建Surface结构体，即物体表面属性，构建完成之后就可以在片元着色器中计算光照
     Surface surface;
     surface.position = input.positionWS;
-    surface.normal = normalize(input.normalWS);
+    surface.normal = NormalTangentToWorld(
+        GetNormalTS(input.baseUV), input.normalWS, input.tangentWS
+    );
+    surface.interpolatedNormal = normalize(input.normalWS);
     surface.viewDirection = normalize(_WorldSpaceCameraPos - input.positionWS);
     surface.depth = -TransformWorldToView(input.positionWS).z;
     surface.color = base.rgb;
