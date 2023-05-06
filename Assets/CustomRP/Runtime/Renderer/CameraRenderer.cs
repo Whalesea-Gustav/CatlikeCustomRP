@@ -49,6 +49,31 @@ public partial class CameraRenderer {
 		lighting.Cleanup();
 		Submit();
 	}
+	
+	public void Render (ScriptableRenderContext context, Camera camera, 
+		bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject,
+		ShadowSettings shadowSettings) {
+		this.context = context;
+		this.camera = camera;
+
+		PrepareBuffer();
+		PrepareForSceneWindow();
+		if (!Cull(shadowSettings.maxDistance)) {
+			return;
+		}
+		
+		buffer.BeginSample(SampleName); // nest sampling for shadow
+		ExecuteBuffer();
+		lighting.Setup(context, cullingResults, shadowSettings);
+		buffer.EndSample(SampleName);
+		
+		Setup();
+		DrawVisibleGeometry(useDynamicBatching, useGPUInstancing, useLightsPerObject);
+		DrawUnsupportedShaders();
+		DrawGizmos();
+		lighting.Cleanup();
+		Submit();
+	}
 
 	bool Cull (float maxShadowDistance) {
 		if (camera.TryGetCullingParameters(out ScriptableCullingParameters p)) {
@@ -103,6 +128,58 @@ public partial class CameraRenderer {
 			                PerObjectData.LightProbeProxyVolume |
 			                PerObjectData.OcclusionProbe |
 			                PerObjectData.OcclusionProbeProxyVolume
+		};
+		//extraShader
+		for (int i = 0; i < extraShaderTagIds.Length; i++) {
+			drawingSettings.SetShaderPassName(i+1, extraShaderTagIds[i]);
+		}
+		
+		//lit
+		drawingSettings.SetShaderPassName(extraShaderTagIds.Length+1, litShaderTagId);
+		
+		var filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
+
+		context.DrawRenderers(
+			cullingResults, ref drawingSettings, ref filteringSettings
+		);
+
+		context.DrawSkybox(camera);
+
+		sortingSettings.criteria = SortingCriteria.CommonTransparent;
+		drawingSettings.sortingSettings = sortingSettings;
+		filteringSettings.renderQueueRange = RenderQueueRange.transparent;
+
+		context.DrawRenderers(
+			cullingResults, ref drawingSettings, ref filteringSettings
+		);
+	}
+	
+	void DrawVisibleGeometry (bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject) 
+	{
+		PerObjectData lightsPerObjectFlags = useLightsPerObject ?
+			PerObjectData.LightData | PerObjectData.LightIndices :
+			PerObjectData.None;
+		
+		var sortingSettings = new SortingSettings(camera) {
+			criteria = SortingCriteria.CommonOpaque
+		};
+		
+		//unlit
+		var drawingSettings = new DrawingSettings(
+			unlitShaderTagId, sortingSettings
+		)
+		{
+			enableDynamicBatching = useDynamicBatching,
+			enableInstancing = useGPUInstancing,
+			perObjectData = 
+				PerObjectData.ReflectionProbes |
+				PerObjectData.Lightmaps |
+				PerObjectData.ShadowMask |
+				PerObjectData.LightProbe |
+				PerObjectData.LightProbeProxyVolume |
+				PerObjectData.OcclusionProbe |
+				PerObjectData.OcclusionProbeProxyVolume |
+				lightsPerObjectFlags
 		};
 		//extraShader
 		for (int i = 0; i < extraShaderTagIds.Length; i++) {
