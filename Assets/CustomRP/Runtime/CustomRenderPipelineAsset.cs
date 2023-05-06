@@ -10,7 +10,7 @@ public class CustomRenderPipelineAsset : RenderPipelineAsset
         useGPUInstancing = true, 
         useSRPBatcher = true,
         useLightsPerObject = true;
-    
+        
     [SerializeField]
     ShadowSettings shadows = default;
     protected override RenderPipeline CreatePipeline()

@@ -64,7 +64,7 @@ public partial class CameraRenderer {
 		
 		buffer.BeginSample(SampleName); // nest sampling for shadow
 		ExecuteBuffer();
-		lighting.Setup(context, cullingResults, shadowSettings);
+		lighting.Setup(context, cullingResults, shadowSettings, useLightsPerObject);
 		buffer.EndSample(SampleName);
 		
 		Setup();
