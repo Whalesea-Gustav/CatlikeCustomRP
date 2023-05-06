@@ -313,7 +313,7 @@ float GetOtherShadowAttenuation (
     float shadow;
     if (other.strength > 0.0) {
         shadow = GetBakedShadow(
-            global.shadowMask, other.shadowMaskChannel, other.strength
+            global.shadowMask, other.strength, other.shadowMaskChannel
         );
     }
     else {
