@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: 3052573c22cf73d4196f3fae95e86dcb, type: 2}
+  m_LightingDataAsset: {fileID: 112000000, guid: 1e3e0d2e9ca2121408386edebcc61c01, type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: 9c6477ac6e174fb4aa5c44de9cf64e6c, type: 2}
 --- !u!196 &4
 NavMeshSettings:
@@ -158,8 +158,9 @@ MonoBehaviour:
   baseColor: {r: 1, g: 1, b: 1, a: 1}
   emissionColor: {r: 0, g: 0, b: 0, a: 1}
   alphaCutoff: 0.5
-  metallic: 0.503
-  smoothness: 0.706
+  metallic: 0.476
+  smoothness: 1
+  fresnel: 1
 --- !u!135 &81402131
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -187,7 +188,7 @@ MeshRenderer:
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_ReflectionProbeUsage: 3
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
@@ -328,7 +329,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 64
   m_IsActive: 1
 --- !u!114 &148179996
 MonoBehaviour:
@@ -347,6 +348,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!135 &148179997
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -374,7 +376,7 @@ MeshRenderer:
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_ReflectionProbeUsage: 3
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
@@ -443,7 +445,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 1
+  m_StaticEditorFlags: 65
   m_IsActive: 1
 --- !u!114 &306193866
 MonoBehaviour:
@@ -462,6 +464,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!65 &306193867
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -577,6 +580,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!135 &386782891
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -673,7 +677,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 1
+  m_StaticEditorFlags: 65
   m_IsActive: 1
 --- !u!114 &392216653
 MonoBehaviour:
@@ -692,6 +696,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!65 &392216654
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -807,6 +812,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0.359
   smoothness: 0.479
+  fresnel: 1
 --- !u!135 &447896511
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -834,7 +840,7 @@ MeshRenderer:
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_ReflectionProbeUsage: 3
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
@@ -903,7 +909,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 1
+  m_StaticEditorFlags: 65
   m_IsActive: 1
 --- !u!114 &473698072
 MonoBehaviour:
@@ -922,6 +928,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!65 &473698073
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1018,7 +1025,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 1
+  m_StaticEditorFlags: 65
   m_IsActive: 1
 --- !u!114 &475201263
 MonoBehaviour:
@@ -1037,6 +1044,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!65 &475201264
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1133,7 +1141,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 64
   m_IsActive: 1
 --- !u!114 &527516199
 MonoBehaviour:
@@ -1152,6 +1160,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!135 &527516200
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1429,6 +1438,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!1 &558995193
 GameObject:
   m_ObjectHideFlags: 0
@@ -1447,7 +1457,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 1
+  m_StaticEditorFlags: 65
   m_IsActive: 1
 --- !u!114 &558995194
 MonoBehaviour:
@@ -1466,6 +1476,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!65 &558995195
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1544,6 +1555,71 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: -17.808, z: 0}
+--- !u!1 &710665048
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 710665050}
+  - component: {fileID: 710665049}
+  m_Layer: 0
+  m_Name: Reflection Probe (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!215 &710665049
+ReflectionProbe:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 710665048}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Type: 0
+  m_Mode: 0
+  m_RefreshMode: 0
+  m_TimeSlicingMode: 0
+  m_Resolution: 128
+  m_UpdateFrequency: 0
+  m_BoxSize: {x: 10, y: 10, z: 10}
+  m_BoxOffset: {x: 0, y: 0, z: 0}
+  m_NearClip: 0.3
+  m_FarClip: 1000
+  m_ShadowDistance: 100
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IntensityMultiplier: 1
+  m_BlendDistance: 1
+  m_HDR: 1
+  m_BoxProjection: 0
+  m_RenderDynamicObjects: 0
+  m_UseOcclusionCulling: 1
+  m_Importance: 1
+  m_CustomBakedTexture: {fileID: 0}
+--- !u!4 &710665050
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 710665048}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.61, y: 3.27, z: 0.324}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 32
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &721401438
 GameObject:
   m_ObjectHideFlags: 0
@@ -1680,6 +1756,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!1 &911929023
 GameObject:
   m_ObjectHideFlags: 0
@@ -1754,7 +1831,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 1.02e-43, y: 0, z: 0, w: -1.9086422e+12}
+  m_BoundingSphereOverride: {x: 1.02e-43, y: 0, z: 0, w: 3.0374156e+34}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -1848,7 +1925,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 1.05e-43, y: 7.1e-44, z: 0, w: -5.526921e+21}
+  m_BoundingSphereOverride: {x: 1.02e-43, y: 0, z: 0, w: 3.0374156e+34}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -1886,7 +1963,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 1
+  m_StaticEditorFlags: 65
   m_IsActive: 1
 --- !u!114 &984312328
 MonoBehaviour:
@@ -1905,6 +1982,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!65 &984312329
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2001,7 +2079,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 1
+  m_StaticEditorFlags: 65
   m_IsActive: 1
 --- !u!114 &1037358296
 MonoBehaviour:
@@ -2020,6 +2098,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!65 &1037358297
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2047,7 +2126,7 @@ MeshRenderer:
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_ReflectionProbeUsage: 0
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
@@ -2135,6 +2214,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0.493
   smoothness: 0.5
+  fresnel: 1
 --- !u!135 &1063804918
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2162,7 +2242,7 @@ MeshRenderer:
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_ReflectionProbeUsage: 3
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
@@ -2231,7 +2311,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 1
+  m_StaticEditorFlags: 65
   m_IsActive: 1
 --- !u!114 &1175686899
 MonoBehaviour:
@@ -2250,6 +2330,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!65 &1175686900
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2365,6 +2446,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!65 &1275694308
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2461,7 +2543,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 1
+  m_StaticEditorFlags: 65
   m_IsActive: 1
 --- !u!114 &1295887697
 MonoBehaviour:
@@ -2480,6 +2562,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!65 &1295887698
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2608,6 +2691,71 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 28
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1424508163
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1424508165}
+  - component: {fileID: 1424508164}
+  m_Layer: 0
+  m_Name: Reflection Probe (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!215 &1424508164
+ReflectionProbe:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1424508163}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Type: 0
+  m_Mode: 0
+  m_RefreshMode: 0
+  m_TimeSlicingMode: 0
+  m_Resolution: 128
+  m_UpdateFrequency: 0
+  m_BoxSize: {x: 10, y: 10, z: 10}
+  m_BoxOffset: {x: 0, y: 0, z: 0}
+  m_NearClip: 0.3
+  m_FarClip: 1000
+  m_ShadowDistance: 100
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IntensityMultiplier: 1
+  m_BlendDistance: 1
+  m_HDR: 1
+  m_BoxProjection: 0
+  m_RenderDynamicObjects: 0
+  m_UseOcclusionCulling: 1
+  m_Importance: 1
+  m_CustomBakedTexture: {fileID: 0}
+--- !u!4 &1424508165
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1424508163}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.61, y: 0.32, z: -3.203}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 31
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1465627262
 GameObject:
   m_ObjectHideFlags: 0
@@ -2645,6 +2793,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0.686
   smoothness: 0.575
+  fresnel: 1
 --- !u!135 &1465627264
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2672,7 +2821,7 @@ MeshRenderer:
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_ReflectionProbeUsage: 3
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
@@ -2760,6 +2909,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!65 &1501336987
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2856,7 +3006,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 1
+  m_StaticEditorFlags: 65
   m_IsActive: 1
 --- !u!114 &1557034524
 MonoBehaviour:
@@ -2875,6 +3025,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!65 &1557034525
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2971,7 +3122,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 1
+  m_StaticEditorFlags: 65
   m_IsActive: 1
 --- !u!114 &1735047554
 MonoBehaviour:
@@ -2990,6 +3141,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!64 &1735047555
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3152,6 +3304,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TestBall
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f002266e700e2f04090a55b6c3f2cce1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 65
+      objectReference: {fileID: 0}
     - target: {fileID: 1151388028547126963, guid: f002266e700e2f04090a55b6c3f2cce1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.6
@@ -3178,7 +3334,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8164078558771037576, guid: f002266e700e2f04090a55b6c3f2cce1, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 1
+      value: 65
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f002266e700e2f04090a55b6c3f2cce1, type: 3}
@@ -3204,6 +3360,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!1 &1822221484
 GameObject:
   m_ObjectHideFlags: 0
@@ -3222,7 +3379,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 1
+  m_StaticEditorFlags: 65
   m_IsActive: 1
 --- !u!114 &1822221485
 MonoBehaviour:
@@ -3241,6 +3398,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!65 &1822221486
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3319,6 +3477,71 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0.421, z: 0}
+--- !u!1 &1871562616
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1871562618}
+  - component: {fileID: 1871562617}
+  m_Layer: 0
+  m_Name: Reflection Probe
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!215 &1871562617
+ReflectionProbe:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1871562616}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Type: 0
+  m_Mode: 0
+  m_RefreshMode: 0
+  m_TimeSlicingMode: 0
+  m_Resolution: 128
+  m_UpdateFrequency: 0
+  m_BoxSize: {x: 10, y: 10, z: 10}
+  m_BoxOffset: {x: 0, y: 0, z: 0}
+  m_NearClip: 0.3
+  m_FarClip: 1000
+  m_ShadowDistance: 100
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IntensityMultiplier: 1
+  m_BlendDistance: 1
+  m_HDR: 1
+  m_BoxProjection: 0
+  m_RenderDynamicObjects: 0
+  m_UseOcclusionCulling: 1
+  m_Importance: 1
+  m_CustomBakedTexture: {fileID: 0}
+--- !u!4 &1871562618
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1871562616}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.28, y: 0.52, z: -1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 30
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2120054460
 GameObject:
   m_ObjectHideFlags: 0
@@ -3337,7 +3560,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 1
+  m_StaticEditorFlags: 65
   m_IsActive: 1
 --- !u!114 &2120054461
 MonoBehaviour:
@@ -3356,6 +3579,7 @@ MonoBehaviour:
   alphaCutoff: 0.5
   metallic: 0
   smoothness: 0.5
+  fresnel: 1
 --- !u!65 &2120054462
 BoxCollider:
   m_ObjectHideFlags: 0
