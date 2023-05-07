@@ -102,7 +102,7 @@ ShadowData GetShadowData(Surface surfaceWS)
         }
     }
 
-    if (i == _CascadeCount)
+    if (i == _CascadeCount && _CascadeCount > 0)
     {
         data.strength = 0.0;
     }
@@ -302,6 +302,12 @@ float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowD
     return shadow;
 }
 
+float GetOtherShadow (
+    OtherShadowData other, ShadowData global, Surface surfaceWS
+) {
+    return 1.0;
+}
+
 
 float GetOtherShadowAttenuation (
     OtherShadowData other, ShadowData global, Surface surfaceWS
@@ -311,14 +317,29 @@ float GetOtherShadowAttenuation (
     #endif
 	
     float shadow;
-    if (other.strength > 0.0) {
+
+    if(other.strength * global.strength <= 0.0)
+    {
         shadow = GetBakedShadow(
-            global.shadowMask, other.strength, other.shadowMaskChannel
+            global.shadowMask, abs(other.strength), other.shadowMaskChannel 
         );
     }
-    else {
-        shadow = 1.0;
+    else
+    {
+        shadow = GetOtherShadow(other, global, surfaceWS);
+        shadow = MixBakedAndRealtimeShadows(
+            global, shadow, other.shadowMaskChannel, other.strength
+        );
     }
+    
+    // if (other.strength > 0.0) {
+    //     shadow = GetBakedShadow(
+    //         global.shadowMask, other.strength, other.shadowMaskChannel
+    //     );
+    // }
+    // else {
+    //     shadow = 1.0;
+    // }
     return shadow;
 }
 
