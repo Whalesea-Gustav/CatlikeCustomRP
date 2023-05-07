@@ -15,13 +15,26 @@
     #define DIRECTIONAL_FILTER_SETUP SampleShadow_ComputeSamples_Tent_7x7
 #endif
 
+#if defined(_OTHER_PCF3)
+    #define OTHER_FILTER_SAMPLES 4
+    #define OTHER_FILTER_SETUP SampleShadow_ComputeSamples_Tent_3x3
+#elif defined(_OTHER_PCF5)
+    #define OTHER_FILTER_SAMPLES 9
+    #define OTHER_FILTER_SETUP SampleShadow_ComputeSamples_Tent_5x5
+#elif defined(_OTHER_PCF7)
+    #define OTHER_FILTER_SAMPLES 16
+    #define OTHER_FILTER_SETUP SampleShadow_ComputeSamples_Tent_7x7
+#endif
+
 //宏定义最大支持阴影的方向光源数，要与CPU端同步，为4
 #define MAX_SHADOWED_DIRECTIONAL_LIGHT_COUNT 4
+#define MAX_SHADOWED_OTHER_LIGHT_COUNT 16
 #define MAX_CASCADE_COUNT 4
 
 //接收CPU端传来的ShadowAtlas
 //使用TEXTURE2D_SHADOW来明确我们接收的是阴影贴图
 TEXTURE2D_SHADOW(_DirectionalShadowAtlas);
+TEXTURE2D_SHADOW(_OtherShadowAtlas);
 //阴影贴图只有一种采样方式，因此我们显式定义一个阴影采样器状态（不需要依赖任何纹理），其名字为sampler_linear_clamp_compare(使用宏定义它为SHADOW_SAMPLER)
 //由此，对于任何阴影贴图，我们都可以使用SHADOW_SAMPLER这个采样器状态
 //sampler_linear_clamp_compare这个取名十分有讲究，Unity会将这个名字翻译成使用Linear过滤、Clamp包裹的用于深度比较的采样器
@@ -34,6 +47,8 @@ int _CascadeCount;
 float4 _CascadeCullingSpheres[MAX_CASCADE_COUNT];
 float4 _CascadeData[MAX_CASCADE_COUNT];
 float4x4 _DirectionalShadowMatrices[MAX_SHADOWED_DIRECTIONAL_LIGHT_COUNT * MAX_CASCADE_COUNT];
+float4x4 _OtherShadowMatrices[MAX_SHADOWED_OTHER_LIGHT_COUNT];
+float4 _OtherShadowTiles[MAX_SHADOWED_OTHER_LIGHT_COUNT];
 float4 _ShadowAtlasSize;
 float4 _ShadowDistanceFade;
 CBUFFER_END
@@ -55,15 +70,19 @@ struct DirectionalShadowData
 
 struct ShadowData
 {
-    int cascadeIndex;
     float cascadeBlend;
     float strength;
     ShadowMask shadowMask;
+    int cascadeIndex;
 };
 
-struct OtherShadowData {
+struct OtherShadowData
+{
     float strength;
+    int tileIndex;
     int shadowMaskChannel;
+    float3 lightPositionWS;
+    float3 spotDirectionWS;
 };
 
 float FadedShadowStrength(float distance, float scale, float fade)
@@ -128,6 +147,13 @@ float SampleDirectionalShadowAtlas(float3 positionSTS)
     return SAMPLE_TEXTURE2D_SHADOW(_DirectionalShadowAtlas, SHADOW_SAMPLER, positionSTS);
 }
 
+float SampleOtherShadowAtlas (float3 positionSTS, float3 bounds) {
+    positionSTS.xy = clamp(positionSTS.xy, bounds.xy, bounds.xy + bounds.z);
+    return SAMPLE_TEXTURE2D_SHADOW(
+        _OtherShadowAtlas, SHADOW_SAMPLER, positionSTS
+    );
+}
+
 float FilterDirectionalShadow(float3 positionSTS)
 {
     #if defined(DIRECTIONAL_FILTER_SETUP)
@@ -144,6 +170,24 @@ float FilterDirectionalShadow(float3 positionSTS)
     return shadow;
     #else
     return SampleDirectionalShadowAtlas(positionSTS);
+    #endif
+}
+
+float FilterOtherShadow (float3 positionSTS, float3 bounds) {
+    #if defined(OTHER_FILTER_SETUP)
+    real weights[OTHER_FILTER_SAMPLES];
+    real2 positions[OTHER_FILTER_SAMPLES];
+    float4 size = _ShadowAtlasSize.wwzz;
+    OTHER_FILTER_SETUP(size, positionSTS.xy, weights, positions);
+    float shadow = 0;
+    for (int i = 0; i < OTHER_FILTER_SAMPLES; i++) {
+        shadow += weights[i] * SampleOtherShadowAtlas(
+            float3(positions[i].xy, positionSTS.z), bounds
+        );
+    }
+    return shadow;
+    #else
+    return SampleOtherShadowAtlas(positionSTS, bounds);
     #endif
 }
 
@@ -305,7 +349,16 @@ float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowD
 float GetOtherShadow (
     OtherShadowData other, ShadowData global, Surface surfaceWS
 ) {
-    return 1.0;
+    float4 tileData = _OtherShadowTiles[other.tileIndex];
+    float3 surfaceToLight = other.lightPositionWS - surfaceWS.position;
+    float distanceToLightPlane = dot(surfaceToLight, other.spotDirectionWS);
+    float magic_number = 2.0f;
+    float3 normalBias = surfaceWS.interpolatedNormal * (magic_number * distanceToLightPlane * tileData.w);
+    float4 positionSTS = mul(
+        _OtherShadowMatrices[other.tileIndex],
+        float4(surfaceWS.position + normalBias, 1.0)
+    );
+    return FilterOtherShadow(positionSTS.xyz / positionSTS.w, tileData.xyz);
 }
 
 
